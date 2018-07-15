@@ -3,10 +3,13 @@ package be.ac.umons.babaisyou.game;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -890,6 +893,15 @@ public class Level {
 			}
 		}
 	}
+
+
+	public static Level load(File file) throws WrongFileFormatException {
+		try {
+			return load(new FileInputStream(file));
+		} catch (FileNotFoundException e) {
+			throw new WrongFileFormatException();
+		}
+	}
 	
 	
 	/**
@@ -922,9 +934,9 @@ public class Level {
 	 * @return Un niveau d'après le fichier
 	 * @throws WrongFileFormatException si le fichier ne correpond pas à la norme çi-dessus.
 	 */
-	public static Level load(File file) throws WrongFileFormatException {
+	public static Level load(InputStream inputStream) throws WrongFileFormatException {
 		
-		try (BufferedReader buffer = new BufferedReader(new FileReader(file))) {
+		try (BufferedReader buffer = new BufferedReader(new InputStreamReader(inputStream))) {
 			
 			/*
 			 * Lecture de la dimension
@@ -940,7 +952,7 @@ public class Level {
 			int width = Integer.parseInt(dims[0]);
 			int height = Integer.parseInt(dims[1]);
 			
-			Level level = new Level(width, height, file.getName());
+			Level level = new Level(width, height);
 			
 			/*
 			 * Ajout des blocs un à un.
@@ -1010,7 +1022,7 @@ public class Level {
 			level.parseRules(); 	//ajout des règles
 			return level;
 		} catch (Exception  e1) {
-			LOGGER.warning(file.getName() +" coun't be loaded." + e1.getMessage());
+			LOGGER.warning( "InputStream coun't be loaded." + e1.getMessage());
 			throw new WrongFileFormatException(e1);
 		}
 	}

@@ -18,7 +18,8 @@
         </activity>
         <activity
             android:name=".LevelsListActivity"
-            android:parentActivityName=".MainActivity"></activity>
+            android:parentActivityName=".MainActivity" />
+        <activity android:name=".LevelActivity"></activity>
     </application>
 
 </manifest>

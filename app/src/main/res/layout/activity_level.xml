@@ -4,10 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LevelsListActivity">
+    tools:context=".LevelActivity">
 
-    <ListView
-        android:id="@+id/levelsListView"
+    <android.support.v7.widget.GridLayout
+        android:id="@+id/level_grid"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="8dp">
+
+    </android.support.v7.widget.GridLayout>
 </android.support.constraint.ConstraintLayout>
