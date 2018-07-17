@@ -189,7 +189,9 @@ public class LevelsListActivity extends AppCompatActivity {
          */
         public Level getCurrentLevel() throws WrongFileFormatException {
             try {
-                return Level.load(getAssets().open("levels/"+currentLevel));
+                Level level = Level.load(getAssets().open("levels/"+currentLevel));
+                level.setLevelName(currentLevel);
+                return level;
             } catch (WrongFileFormatException | IOException e) {
                 throw new WrongFileFormatException(e);
             }

@@ -85,7 +85,6 @@ public class LevelActivity extends AppCompatActivity implements GestureDetector.
             images.put(type.getId(), bitmap);
         }
 
-
         gestureDetector = new GestureDetectorCompat(this, this);
         gestureDetector.setOnDoubleTapListener(this);
 
@@ -105,7 +104,7 @@ public class LevelActivity extends AppCompatActivity implements GestureDetector.
 
 
     private void update() {
-
+        setTitle(level.getName());
         //Remove all images
         grid.removeAllViews();
 

@@ -262,6 +262,17 @@ public class Level {
 	void setWon(boolean hasWon) {
 		this.hasWon = hasWon;
 	}
+
+	/**
+	 * Fixe le nom du niveau
+	 */
+	public void setLevelName(String name) {
+		levelName = name;
+	}
+	public String getName() {
+		return levelName;
+	}
+
 	
 	/**
 	 * Renvoie tous les élements à une position sous forme de chaîne de charactères.
