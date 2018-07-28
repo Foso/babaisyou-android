@@ -215,6 +215,11 @@ public class LevelActivity extends AppCompatActivity implements GestureDetector.
             case right: level.move(be.ac.umons.babaisyou.game.Direction.RIGHT); break;
             case left: level.move(be.ac.umons.babaisyou.game.Direction.LEFT); break;
         }
+        if (level.hasMoved()) {
+            MediaPlayer moveSound = MediaPlayer.create(LevelActivity.this, R.raw.move);
+            moveSound.start();
+        }
+
         // if gagne changer titre et map
         if (level.hasWon()) {
             try {

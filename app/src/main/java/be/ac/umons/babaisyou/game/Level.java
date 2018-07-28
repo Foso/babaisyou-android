@@ -75,6 +75,11 @@ public class Level {
 	 * Indique si le joueur a réussi le niveau
 	 */
 	private boolean hasWon;
+
+	/*
+	 * Indique si le joueur s'est déplacé
+	 */
+	private boolean hasMoved;
 	
 	/**
 	 * Indique si un le rafraîchissement des règles doit être fait.
@@ -113,6 +118,8 @@ public class Level {
 		Action.setLevel(this);
 		
 		isPositions = new LinkedList<>(); //Pas de is dans un niveau vide
+
+		hasMoved = false;
 		
 		updatePlayerList();
 		parseRules();
@@ -154,7 +161,13 @@ public class Level {
 		return hasWon;
 	}
 	
-	
+	/*
+	 * Indique si le joueur s'est déplacé ce tour ci
+	 */
+	public boolean hasMoved() {
+		return hasMoved;
+	}
+
 	/**
 	 * Demande de réanalyser les règles pour le tour suivant.
 	 */
@@ -312,6 +325,7 @@ public class Level {
 	 * @param direction La direction dans laquelle déplacer les joueurs
 	 */
 	public void move(Direction direction) {
+		hasMoved = false;
 		// Ne rien déplacer si il n'y a pas de joueurs
 		// Ou pas de IS YOU ou aucun bloc correspodant sur la carte
 		if (playerTypes.size() == 0 || playerPositions.size() == 0) {
@@ -330,6 +344,7 @@ public class Level {
 		}
 		
 		if (canmove) {
+			hasMoved = true;
 			for (BlockType type : playerTypes) {
 				List<Position> newPositions = new ArrayList<Position>(); // Stocke la nouvelle position de tout les joueurs de ce type
 				for (Position position : playerPositions.get(type)) {
