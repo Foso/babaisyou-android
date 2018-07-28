@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -60,6 +61,7 @@ public class LevelActivity extends AppCompatActivity implements GestureDetector.
 
         try {
             level = Level.load(getAssets().open("levels/" + currlvl));
+            setTitle(level.getName());
         } catch (WrongFileFormatException e) {
             //TODO
             e.printStackTrace();
@@ -216,6 +218,9 @@ public class LevelActivity extends AppCompatActivity implements GestureDetector.
         // if gagne changer titre et map
         if (level.hasWon()) {
             try {
+                // Play win sound
+                MediaPlayer winSound = MediaPlayer.create(LevelActivity.this, R.raw.win);
+                winSound.start();
                 levelPack.nextLevel();
             } catch (GamedCompletedException e1) {
                 //Revenir au menu principal

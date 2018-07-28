@@ -1,5 +1,7 @@
 package be.ac.umons.babaisyou.game;
 
+import android.media.MediaPlayer;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -17,6 +19,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import babaisyou.umons.ac.be.babaisyou.LevelActivity;
+import babaisyou.umons.ac.be.babaisyou.MainActivity;
 import be.ac.umons.babaisyou.exceptions.NotADirectionException;
 import be.ac.umons.babaisyou.exceptions.WrongFileFormatException;
 import be.ac.umons.babaisyou.exceptions.WrongLevelDimensionException;
