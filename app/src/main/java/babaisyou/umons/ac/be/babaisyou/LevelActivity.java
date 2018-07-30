@@ -40,6 +40,9 @@ public class LevelActivity extends AppCompatActivity implements GestureDetector.
 
     private HashMap<String, Bitmap> images;
 
+    private MediaPlayer moveSound;
+    private MediaPlayer winSound;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +89,9 @@ public class LevelActivity extends AppCompatActivity implements GestureDetector.
             }
             images.put(type.getId(), bitmap);
         }
+
+        moveSound = MediaPlayer.create(LevelActivity.this, R.raw.move);
+        winSound = MediaPlayer.create(LevelActivity.this, R.raw.win);
 
         gestureDetector = new GestureDetectorCompat(this, this);
         gestureDetector.setOnDoubleTapListener(this);
@@ -216,15 +222,16 @@ public class LevelActivity extends AppCompatActivity implements GestureDetector.
             case left: level.move(be.ac.umons.babaisyou.game.Direction.LEFT); break;
         }
         if (level.hasMoved()) {
-            MediaPlayer moveSound = MediaPlayer.create(LevelActivity.this, R.raw.move);
+            moveSound.seekTo(0);
             moveSound.start();
+
         }
 
         // if gagne changer titre et map
         if (level.hasWon()) {
             try {
                 // Play win sound
-                MediaPlayer winSound = MediaPlayer.create(LevelActivity.this, R.raw.win);
+                winSound.seekTo(0);
                 winSound.start();
                 levelPack.nextLevel();
             } catch (GamedCompletedException e1) {
