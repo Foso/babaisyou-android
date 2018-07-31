@@ -17,7 +17,6 @@ import android.support.v7.widget.GridLayout;
 import android.widget.ImageView;
 import android.util.Log;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -25,7 +24,6 @@ import java.util.HashMap;
 import be.ac.umons.babaisyou.exceptions.GamedCompletedException;
 import be.ac.umons.babaisyou.exceptions.WrongFileFormatException;
 import be.ac.umons.babaisyou.game.BlockType;
-import be.ac.umons.babaisyou.game.Direction;
 import be.ac.umons.babaisyou.game.Level;
 
 public class LevelActivity extends AppCompatActivity implements GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {

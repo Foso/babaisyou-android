@@ -1,15 +1,17 @@
 package babaisyou.umons.ac.be.babaisyou;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
-import android.util.Log;
 
 
 import java.io.BufferedReader;
@@ -18,11 +20,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import be.ac.umons.babaisyou.exceptions.GamedCompletedException;
 import be.ac.umons.babaisyou.exceptions.WrongFileFormatException;
-import be.ac.umons.babaisyou.exceptions.WrongLevelDimensionException;
 import be.ac.umons.babaisyou.game.Level;
 
 
@@ -34,6 +36,8 @@ public class LevelsListActivity extends AppCompatActivity {
 
     LevelPack levelPack;
     String[] levels;
+    String[] allLevels;
+
 
 
     @Override
@@ -48,9 +52,26 @@ public class LevelsListActivity extends AppCompatActivity {
 
         levels = getLevels();
 
+        allLevels = getAllLevels();
+
         //Log.w(TAG, Arrays.toString(levels));
 
-        ListAdapter levelsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, levels);
+        ListAdapter levelsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, allLevels) {
+            /*
+             * Changes the color of the list item according if it is playable or not
+             */
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View v = super.getView(position, convertView, parent);
+                TextView tv = (TextView) v; //Assumes we use an ArrayAdapter or similar (Creates TextView)
+                if (!allLevels[position].equals(levels[position])) {
+                    //v.setBackgroundColor(Color.LTGRAY);
+                    tv.setTextColor(Color.LTGRAY);
+                }
+
+                return v;
+            };
+        };
 
         levelsListView.setAdapter(levelsAdapter);
 
@@ -80,10 +101,19 @@ public class LevelsListActivity extends AppCompatActivity {
         return levelPack.getPlayableLevels();
     }
 
+    private String[] getAllLevels() {
+        return levelPack.getAllLevels();
+    }
+
     private void onLevelSelection(String levelChosen) {
-        Intent intent = new Intent(this, LevelActivity.class);
-        intent.putExtra("level", levelChosen);
-        startActivity(intent);
+        if (Arrays.asList(levels).contains(levelChosen)) {
+            Intent intent = new Intent(this, LevelActivity.class);
+            intent.putExtra("level", levelChosen);
+            startActivity(intent);
+        } else {
+            Toast.makeText(getApplicationContext(), "Please unlock this level first", Toast.LENGTH_LONG).show();
+        }
+
     }
 
 
@@ -282,6 +312,15 @@ public class LevelsListActivity extends AppCompatActivity {
                 }
             }
             return playableLevels;
+        }
+
+
+        /**
+         * Renvoie la liste de tous les niveaux disponibles
+         * @return la liste de tous les niveaux jouables
+         */
+        public String[] getAllLevels() {
+            return levelsList;
         }
 
 
