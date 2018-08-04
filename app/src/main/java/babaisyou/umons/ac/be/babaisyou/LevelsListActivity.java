@@ -1,9 +1,13 @@
 package babaisyou.umons.ac.be.babaisyou;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -19,7 +23,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import be.ac.umons.babaisyou.exceptions.GamedCompletedException;
@@ -33,33 +39,28 @@ public class LevelsListActivity extends AppCompatActivity {
 
     private static LevelsListActivity instance;
 
-    LevelPack levelPack;
-    String[] levels;
-    String[] allLevels;
+    private LevelPack levelPack;
+    private String[] levels;
+    private String[] allLevels;
+
+    private ListAdapter levelsAdapter;
 
     @Override
     protected void onResume() {
+        // Update All levels and refresh screen
+
+        updateLevelsList();
+
+
         super.onResume();
     }
 
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        instance = this;
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_levels_list);
-
+    private void updateLevelsList() {
         ListView levelsListView = (ListView) findViewById(R.id.levelsListView);
-
-        levelPack = new LevelPack();
 
         levels = getLevels();
 
-        allLevels = getAllLevels();
-
-        //Log.w(TAG, Arrays.toString(levels));
-
-        ListAdapter levelsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, allLevels) {
+        levelsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, allLevels) {
             /*
              * Changes the color of the list item according if it is playable or not
              */
@@ -77,6 +78,26 @@ public class LevelsListActivity extends AppCompatActivity {
         };
 
         levelsListView.setAdapter(levelsAdapter);
+
+    }
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        instance = this;
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_levels_list);
+
+        ListView levelsListView = (ListView) findViewById(R.id.levelsListView);
+
+        levelPack = new LevelPack();
+
+
+        allLevels = getAllLevels();
+
+        //Log.w(TAG, Arrays.toString(levels));
+
+        updateLevelsList();
 
 
         levelsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -167,7 +188,7 @@ public class LevelsListActivity extends AppCompatActivity {
         private String[] levelsList;
 
         /**
-         * Stocke les niveaux que le joueur a terminé (Stockés dans .finished)
+         * Stocke le dernier niveau joué
          */
         private LinkedList<String> alreadyPlayedLevels;
 
@@ -191,29 +212,64 @@ public class LevelsListActivity extends AppCompatActivity {
             }
             levelsList = listOfLevel.toArray(new String[listOfLevel.size()]);
 
-            //Lecture de la liste des parties déjà jouées
-            try (BufferedReader buffer = new BufferedReader(new InputStreamReader(getAssets().open("levels/" + DEFAULT_FINISHED_FILENAME )))) {
-                String line;
-                while (( line = buffer.readLine()) != null ) {
-                    //Ajouter seulement si présent dans les niveaux
-                    if (listOfLevel.contains(line)) {
-                        alreadyPlayedLevels.add(line);
+
+
+            // Lecture de la liste des parties déjà jouées
+            updatePlayedLevels();
+
+            // Dernier niveau joué :
+
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(LevelsListActivity.this);
+            boolean historyEnabled = sharedPreferences.getBoolean("remember_last_played_level_preference", false);
+
+            if (historyEnabled) {
+                SharedPreferences levelHistory = getSharedPreferences("levelHistory", Context.MODE_PRIVATE);
+                Set<String> levelsPlayed = levelHistory.getStringSet("lastLevelPlayed", new HashSet<String>());
+
+                for (String level : levelsList) {
+
+                    if (levelsPlayed.contains(level)) {
+                        alreadyPlayedLevels.add(level);
                     }
 
                 }
-            } catch (FileNotFoundException e) {
-                // Si aucune session précédente n'a été faite, il ne faut rien ajouter à alreadyPlayedLevels
-            } catch (IOException e) {
-                LOGGER.log(java.util.logging.Level.SEVERE, "Problem occured while reading already played Levels", e);
-                throw new RuntimeException(e);
-            }
 
-            //Définis le premier niveau.
-            if (levelsList.length != 0) {
+                //Définit le premier niveau.
+                if (levelsList.length != 0) {
+                    currentLevel = levelsList[0];
+                    currentLevelIndex = 0;
+                }
+            } else {
+                alreadyPlayedLevels.add(levelsList[0]);
+                //Définit le premier niveau.
                 currentLevel = levelsList[0];
                 currentLevelIndex = 0;
             }
 
+
+
+
+        }
+
+        private void updatePlayedLevels() {
+            alreadyPlayedLevels = new LinkedList<>();
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(LevelsListActivity.this);
+            boolean historyEnabled = sharedPreferences.getBoolean("remember_last_played_level_preference", false);
+
+            if (historyEnabled) {
+                SharedPreferences levelHistory = getSharedPreferences("levelHistory", Context.MODE_PRIVATE);
+                Set<String> levelsPlayed = levelHistory.getStringSet("levelHistory", new HashSet<String>());
+
+                Log.w(TAG, "Played Levels: " + levelsPlayed.toString());
+
+                for (String level : levelsList) {
+
+                    if (levelsPlayed.contains(level)) {
+                        alreadyPlayedLevels.add(level);
+                    }
+
+                }
+            }
         }
 
         /**
@@ -254,6 +310,33 @@ public class LevelsListActivity extends AppCompatActivity {
                 //Ajouter si pas fini dans une session précédente
                 alreadyPlayedLevels.add(currentLevel);
             }
+
+            //Save the level played
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(LevelsListActivity.this);
+            boolean historyEnabled = sharedPreferences.getBoolean("remember_last_played_level_preference", false);
+
+            if (historyEnabled) {
+                // Sauver dernier niveau joué
+                SharedPreferences levelHistory = getSharedPreferences("levelHistory", Context.MODE_PRIVATE);
+                Set<String> history = levelHistory.getStringSet("levelHistory", new HashSet<String>());
+
+                //Add level
+                for (String level : alreadyPlayedLevels ) {
+                    history.add(level);
+                }
+
+                Log.w(TAG, "Played Levels:"+history.toString());
+
+                //Write to SharedPreferences
+                SharedPreferences.Editor editor = levelHistory.edit();
+                editor.clear();
+                editor.putStringSet("levelHistory", history);
+                editor.commit();
+            }
+
+
+
+
             /* Cannot save to the apk
             try (BufferedWriter buffer = new BufferedWriter(new FileOutputStream(context.getFileStreamPath("levels/" + DEFAULT_FINISHED_FILENAME), true))) {
                 if (alreadyPlayedLevels.size() != 0) {
@@ -296,6 +379,7 @@ public class LevelsListActivity extends AppCompatActivity {
          *
          */
         public String[] getPlayableLevels() {
+            updatePlayedLevels();
             String[] playableLevels = new String[levelsList.length];
             boolean previousFinished = true;
             boolean played = false;

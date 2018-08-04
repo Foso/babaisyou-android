@@ -84,6 +84,7 @@ public class LevelActivity extends AppCompatActivity implements GestureDetector.
 
         try {
             level = Level.load(getAssets().open("levels/" + currlvl));
+            level.setLevelName(currlvl);
             setTitle(level.getName());
         } catch (WrongFileFormatException e) {
             //TODO
@@ -99,7 +100,6 @@ public class LevelActivity extends AppCompatActivity implements GestureDetector.
         //précharger toutes les images
         images = new HashMap<>();
         for(BlockType type : BlockType.values()) {
-            Log.w(TAG, type.getId());
             Bitmap bitmap = null;
             try {
                 bitmap = BitmapFactory.decodeStream(getAssets().open("images/"+type.getId()+".png"));
@@ -243,7 +243,6 @@ public class LevelActivity extends AppCompatActivity implements GestureDetector.
 
     /** Override this method. The Direction enum will tell you how the user swiped. */
     public boolean onSwipe(Direction direction){
-        Log.w(TAG, direction.toString());
         switch (direction) {
             case up: level.move(be.ac.umons.babaisyou.game.Direction.UP); break;
             case down: level.move(be.ac.umons.babaisyou.game.Direction.DOWN); break;
@@ -260,13 +259,16 @@ public class LevelActivity extends AppCompatActivity implements GestureDetector.
 
         // if gagne changer titre et map
         if (level.hasWon()) {
+
             try {
                 if (sharedPreferences.getBoolean("enable_sound_effects_preference", false)) {
                     // Play win sound
                     winSound.seekTo(0);
                     winSound.start();
                 }
-                levelPack.nextLevel();
+
+
+            levelPack.nextLevel();
 
             } catch (GamedCompletedException e1) {
                 //Revenir au menu principal
