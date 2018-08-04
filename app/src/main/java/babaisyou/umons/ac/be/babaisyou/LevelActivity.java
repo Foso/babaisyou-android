@@ -41,6 +41,18 @@ public class LevelActivity extends AppCompatActivity implements GestureDetector.
     private MediaPlayer moveSound;
     private MediaPlayer winSound;
 
+    @Override
+    protected void onDestroy() {
+        //Stop all sounds when activity destroyed
+        moveSound.stop();
+        winSound.stop();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

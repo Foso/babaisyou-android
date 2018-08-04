@@ -9,6 +9,11 @@ import android.content.Intent;
 public class MainActivity extends AppCompatActivity {
 
     @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -24,10 +29,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        settingsButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onSettings();
+            }
+        });
+
     }
 
     private void onPlay() {
         Intent intent = new Intent(this, LevelsListActivity.class);
+        startActivity(intent);
+    }
+
+    private void onSettings() {
+        Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
 }

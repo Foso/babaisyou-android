@@ -19,7 +19,17 @@
         <activity
             android:name=".LevelsListActivity"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".LevelActivity"></activity>
+        <activity
+            android:name=".LevelActivity"
+            android:parentActivityName=".LevelsListActivity" />
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="babaisyou.umons.ac.be.babaisyou.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

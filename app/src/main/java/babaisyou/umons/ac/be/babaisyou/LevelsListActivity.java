@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.logging.Logger;
 
 import be.ac.umons.babaisyou.exceptions.GamedCompletedException;
@@ -38,6 +37,10 @@ public class LevelsListActivity extends AppCompatActivity {
     String[] levels;
     String[] allLevels;
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 
 
     @Override
@@ -111,7 +114,7 @@ public class LevelsListActivity extends AppCompatActivity {
             intent.putExtra("level", levelChosen);
             startActivity(intent);
         } else {
-            Toast.makeText(getApplicationContext(), "Please unlock this level first", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.toast_please_unlock_level_first, Toast.LENGTH_LONG).show();
         }
 
     }
@@ -322,6 +325,7 @@ public class LevelsListActivity extends AppCompatActivity {
         public String[] getAllLevels() {
             return levelsList;
         }
+
 
 
     }
