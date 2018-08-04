@@ -2,9 +2,11 @@ package babaisyou.umons.ac.be.babaisyou;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
+import android.preference.PreferenceManager;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -40,6 +42,14 @@ public class LevelActivity extends AppCompatActivity implements GestureDetector.
 
     private MediaPlayer moveSound;
     private MediaPlayer winSound;
+    private MediaPlayer backgroundSound;
+
+    @Override
+    protected void onPause() {
+        //Stop sound if out of activity
+        backgroundSound.stop();
+        super.onPause();
+    }
 
     @Override
     protected void onDestroy() {
@@ -102,6 +112,15 @@ public class LevelActivity extends AppCompatActivity implements GestureDetector.
 
         moveSound = MediaPlayer.create(LevelActivity.this, R.raw.move);
         winSound = MediaPlayer.create(LevelActivity.this, R.raw.win);
+        backgroundSound = MediaPlayer.create(LevelActivity.this, R.raw.background);
+        backgroundSound.setLooping(true);
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        if (sharedPreferences.getBoolean("enable_background_music_preference",false)) {
+            backgroundSound.start();
+        }
+
 
         gestureDetector = new GestureDetectorCompat(this, this);
         gestureDetector.setOnDoubleTapListener(this);
@@ -231,7 +250,9 @@ public class LevelActivity extends AppCompatActivity implements GestureDetector.
             case right: level.move(be.ac.umons.babaisyou.game.Direction.RIGHT); break;
             case left: level.move(be.ac.umons.babaisyou.game.Direction.LEFT); break;
         }
-        if (level.hasMoved()) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        if (sharedPreferences.getBoolean("enable_sound_effects_preference", false) && level.hasMoved()) {
             moveSound.seekTo(0);
             moveSound.start();
 
@@ -240,10 +261,13 @@ public class LevelActivity extends AppCompatActivity implements GestureDetector.
         // if gagne changer titre et map
         if (level.hasWon()) {
             try {
-                // Play win sound
-                winSound.seekTo(0);
-                winSound.start();
+                if (sharedPreferences.getBoolean("enable_sound_effects_preference", false)) {
+                    // Play win sound
+                    winSound.seekTo(0);
+                    winSound.start();
+                }
                 levelPack.nextLevel();
+
             } catch (GamedCompletedException e1) {
                 //Revenir au menu principal
                 Intent intent = new Intent(this, MainActivity.class);
